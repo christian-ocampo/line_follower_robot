@@ -7,6 +7,7 @@ int motor1pin1 = 1;
 int motor1pin2 = 2;
 int motor2pin1 = 3;
 int motor2pin2 = 4;
+int enb = 9;
 
 int ir_left_pin = 5; // sets left ir sensor to pin 5. (has black tape)+
 int ir_right_pin = 6; // sets right ir sensor to pin 6.
@@ -20,6 +21,7 @@ void setup() {
   pinMode(motor1pin2, OUTPUT);
   pinMode(motor2pin1, OUTPUT);
   pinMode(motor2pin2, OUTPUT);
+  pinMode(enb, OUTPUT);
 
   lcd.init(); // initializes lcd.
   lcd.backlight(); // turn on backlight.
@@ -33,6 +35,8 @@ void setup() {
 }
 
 void loop() {
+  digitalWrite(enb, HIGH);
+  
   // create a current and previous state of the lcd so that the lcd only changes
   // when the value of both are not equal.
   lcd_prev = lcd_cur;
@@ -40,7 +44,7 @@ void loop() {
   int ir_right = digitalRead(ir_right_pin);
 
   // if both sensors detect a white surface, move forward and print "FORWARD".
-  if (ir_left == 1 && ir_right == 1) {
+  if (ir_left == 0 && ir_right == 0) {
     lcd_cur = 1;
     
     digitalWrite(motor1pin1, HIGH);
@@ -50,6 +54,7 @@ void loop() {
     if (lcd_prev != lcd_cur) {
       lcd.setCursor(0, 1);
       lcd.print("FORWARD         ");
+      delay(10);
     }
   }
    // if only the right sensor detects a black surface, move to the right and print "RIGHT".
@@ -63,6 +68,7 @@ void loop() {
     if (lcd_prev != lcd_cur) {
       lcd.setCursor(0, 1);
       lcd.print("RIGHT           ");
+      delay(10);
     }
    }
    // if only the left sensor detects a black surface, move to the left and print "LEFT".
@@ -76,6 +82,7 @@ void loop() {
     if (lcd_prev != lcd_cur) {
       lcd.setCursor(0, 1);
       lcd.print("LEFT            ");
+      delay(10);
     }    
    }
    // if both sensors detect a black surface, stop the robot and print "STOP".
@@ -84,11 +91,12 @@ void loop() {
     
     digitalWrite(motor1pin1, LOW);
     digitalWrite(motor1pin2, LOW);
-    digitalWrite(motor2pin1, HIGH);
+    digitalWrite(motor2pin1, LOW);
     digitalWrite(motor2pin2, LOW);
     if (lcd_prev != lcd_cur) {
       lcd.setCursor(0, 1);
       lcd.print("STOP            ");
+      delay(10);
     }
    }
   }
